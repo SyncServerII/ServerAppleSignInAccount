@@ -27,6 +27,8 @@ public struct NotificationRequest: RequestMessage {
 public class AppleServerServerNotification: ControllerProtocol {
     public static let endpoint = ServerEndpoint("AppleServerServerNotification", method: .post, requestMessageType: NotificationRequest.self, authenticationLevel: .none)
     
+    public init() {}
+    
     public static func setup() -> Bool {
         return true
     }
