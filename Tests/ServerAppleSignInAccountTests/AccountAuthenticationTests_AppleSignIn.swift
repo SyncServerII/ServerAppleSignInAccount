@@ -8,10 +8,10 @@
 /*
     Testing procedure:
     1) Run the modified juice app and get an authorizationCode
-        - Put this into the plist file
+        - Put this into the json file
 
     2) Use tests below to generate a refresh token
-        - Put this into the plist file
+        - Put this into the json file
  */
 
 import XCTest

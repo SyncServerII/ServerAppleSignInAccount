@@ -111,6 +111,8 @@ public class AppleSignInCreds: AccountAPICall, Account {
     }
     
     public func needToGenerateTokens(dbCreds: Account?) -> Bool {
+        // Making use of a side effect of `needToGenerateTokens`, i.e., setting generateTokens, to either generate the refresh token, or periodically see if the refresh token is valid.
+        
         // Since a) presumably we can't use a serverAuthCode more than once, and b) Apple throttles use of the refresh token, don't generate tokens unless we have a delegate to save the tokens.
         guard let _ = delegate else {
             return false
