@@ -32,4 +32,7 @@ public class AppleServerServerNotification: ControllerProtocol {
     public static func setup() -> Bool {
         return true
     }
+    
+    public func update() {
+    }
 }

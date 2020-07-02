@@ -102,6 +102,8 @@ public class AppleSignInCreds: AccountAPICall, Account {
         baseURL = "appleid.apple.com"
     }
     
+    /* An account can be created only if the expiry date in the token has not yet expired. This relies on a minimim of clock skew between the originating server that generated the token expiry date and the server running this library.
+    */
     public func canCreateAccount(with userProfile: UserProfile) -> Bool {
         guard let expiryDate = userProfile.extendedProperties[CredentialsAppleSignIn.appleSignInTokenExpiryKey] as? Date else {
             return false
@@ -111,7 +113,7 @@ public class AppleSignInCreds: AccountAPICall, Account {
     }
     
     public func needToGenerateTokens(dbCreds: Account?) -> Bool {
-        // Making use of a side effect of `needToGenerateTokens`, i.e., setting generateTokens, to either generate the refresh token, or periodically see if the refresh token is valid.
+        // Making use of a side effect of `needToGenerateTokens`, i.e., setting generateTokens, to either generate the refresh token, or periodically see if the refresh token is valid. When this returns true, `generateTokens` will have been set to a value indicating how to generate tokens.
         
         // Since a) presumably we can't use a serverAuthCode more than once, and b) Apple throttles use of the refresh token, don't generate tokens unless we have a delegate to save the tokens.
         guard let _ = delegate else {
@@ -127,14 +129,16 @@ public class AppleSignInCreds: AccountAPICall, Account {
         
         // The tokens in `self` are assumed to be from the request headers -- i.e., they are new.
         
-        // Do we have a new server auth code? If so, then this is our first priority. Because subsequent id tokens will be generated from the refresh token created from the server auth code?
+        // Do we have a new server auth code? If so, then this is our first priority. Because we will need to later call `validateRefreshToken` with a refresh token, and we obtain the refresh token from a new server auth code.
         if let requestServerAuthCode = serverAuthCode {
             if let dbCreds = dbCreds as? AppleSignInCreds,
                 let databaseServerAuthCode = dbCreds.serverAuthCode {
                 if databaseServerAuthCode != requestServerAuthCode {
+                    // We had a prior server auth code, and now have different (new) server auth code.
                     generateTokens = .generateRefreshToken(serverAuthCode: requestServerAuthCode)
                     return true
                 }
+                // Else: We had a prior server auth code, but no new server auth code.
             }
             else {
                 // We don't have an existing server auth code; assume this means this is a new user.
@@ -142,26 +146,24 @@ public class AppleSignInCreds: AccountAPICall, Account {
                 return true
             }
         }
-        // Don't need to check the case where only the db creds have a server auth code because if we stored the server auth code in the database, we used it already.
+        // Else: Don't need to check the case where only the db creds have a server auth code (and we have no incoming auth code) because if we stored the server auth code in the database, we used it already.
         
-        // Not using a new server auth code. Is it time to generate a new id token?
-        var lastRefresh: Date?
-        var refreshToken = ""
+        // We don't have a new server auth code. Is it time to validate the refresh token?
+        
+        var lastValidation: (refreshDate: Date, refreshToken: String)?
         
         if let dbCreds = dbCreds as? AppleSignInCreds,
-            let last = dbCreds.lastRefreshTokenValidation,
+            let date = dbCreds.lastRefreshTokenValidation,
             let token = dbCreds.refreshToken {
-            lastRefresh = last
-            refreshToken = token
+            lastValidation = (refreshDate: date, refreshToken: token)
         }
-        else if let _ = lastRefreshTokenValidation, let token = self.refreshToken {
-            lastRefresh = lastRefreshTokenValidation
-            refreshToken = token
+        else if let date = lastRefreshTokenValidation, let token = self.refreshToken {
+            lastValidation = (refreshDate: date, refreshToken: token)
         }
         
-        if let last = lastRefresh,
-            GenerateTokens.needToValidateRefreshToken(lastRefreshTokenValidation: last) {
-            generateTokens = .validateRefreshToken(refreshToken: refreshToken)
+        if let lastValidationInfo = lastValidation,
+            GenerateTokens.needToValidateRefreshToken(lastRefreshTokenValidation: lastValidationInfo.refreshDate) {
+            generateTokens = .validateRefreshToken(refreshToken: lastValidationInfo.refreshToken)
             return true
         }
         
@@ -169,6 +171,7 @@ public class AppleSignInCreds: AccountAPICall, Account {
         return false
     }
     
+    /// Must have been immediately preceded by a call to `needToGenerateTokens`.
     public func generateTokens(completion:@escaping (Swift.Error?)->()) {
         guard let generateTokens = generateTokens else {
             completion(AppleSignInCredsError.noCallToNeedToGenerateTokens)
@@ -193,8 +196,28 @@ public class AppleSignInCreds: AccountAPICall, Account {
             }
         }
     }
-    
+
     public func merge(withNewer account: Account) {
+        guard let newerCreds = account as? AppleSignInCreds else {
+            assertionFailure("Wrong other type of creds!")
+            return
+        }
+        
+        if let refreshToken = newerCreds.refreshToken {
+            self.refreshToken = refreshToken
+        }
+        
+        if let accessToken = newerCreds.accessToken {
+            self.accessToken = accessToken
+        }
+        
+        if let serverAuthCode = serverAuthCode {
+            self.serverAuthCode = serverAuthCode
+        }
+        
+        if let lastRefreshTokenValidation = lastRefreshTokenValidation {
+            self.lastRefreshTokenValidation = lastRefreshTokenValidation
+        }
     }
     
     public static func getProperties(fromHeaders headers:AccountHeaders) -> [String: Any] {
