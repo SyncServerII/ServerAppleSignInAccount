@@ -50,9 +50,6 @@ public class AppleSignInCreds: AccountAPICall, Account {
     public static let accountScheme: AccountScheme = .appleSignIn
     public let accountScheme: AccountScheme = AppleSignInCreds.accountScheme
     public let owningAccountsNeedCloudFolderName: Bool = false
-    
-    public weak var delegate: AccountDelegate?
-    
     public var accountCreationUser: AccountCreationUser?
     
     struct DatabaseCreds: Codable {
@@ -68,8 +65,10 @@ public class AppleSignInCreds: AccountAPICall, Account {
     
     // This is actually an idToken, in Apple's terms.
     public var accessToken: String!
-    private var serverAuthCode:String?
     
+    private var serverAuthCode:String?
+    weak var delegate: AccountDelegate?
+
     // Obtained via the serverAuthCode
     var refreshToken: String?
     
@@ -92,10 +91,12 @@ public class AppleSignInCreds: AccountAPICall, Account {
     private(set) var generateTokens: GenerateTokens?
     let config: AppleSignInConfiguration
     
-    required public init?(configuration: Any? = nil) {
+    required public init?(configuration: Any? = nil, delegate: AccountDelegate?) {
         guard let config = configuration as? AppleSignInConfiguration else {
             return nil
         }
+        
+        self.delegate = delegate
         
         self.config = config
         super.init()
@@ -211,11 +212,11 @@ public class AppleSignInCreds: AccountAPICall, Account {
             self.accessToken = accessToken
         }
         
-        if let serverAuthCode = serverAuthCode {
+        if let serverAuthCode = newerCreds.serverAuthCode {
             self.serverAuthCode = serverAuthCode
         }
         
-        if let lastRefreshTokenValidation = lastRefreshTokenValidation {
+        if let lastRefreshTokenValidation = newerCreds.lastRefreshTokenValidation {
             self.lastRefreshTokenValidation = lastRefreshTokenValidation
         }
     }
@@ -235,12 +236,11 @@ public class AppleSignInCreds: AccountAPICall, Account {
     }
     
     public static func fromProperties(_ properties: AccountProperties, user:AccountCreationUser?, configuration: Any?, delegate:AccountDelegate?) -> Account? {
-        guard let creds = AppleSignInCreds(configuration: configuration) else {
+        guard let creds = AppleSignInCreds(configuration: configuration, delegate: delegate) else {
             return nil
         }
         
         creds.accountCreationUser = user
-        creds.delegate = delegate
         creds.accessToken =
             properties.properties[ServerConstants.HTTPOAuth2AccessTokenKey] as? String
         creds.serverAuthCode =
@@ -271,11 +271,10 @@ public class AppleSignInCreds: AccountAPICall, Account {
             return nil
         }
         
-        guard let result = AppleSignInCreds(configuration: configuration) else {
+        guard let result = AppleSignInCreds(configuration: configuration, delegate: delegate) else {
             return nil
         }
         
-        result.delegate = delegate
         result.accountCreationUser = user
         
         result.serverAuthCode = databaseCreds.serverAuthCode

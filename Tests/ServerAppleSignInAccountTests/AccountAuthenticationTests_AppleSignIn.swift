@@ -53,7 +53,7 @@ class AccountAuthenticationTests_AppleSignIn: XCTestCase {
     let config = ServerAppleSignInJSON.load(from: URL(fileURLWithPath: "/Users/chris/Desktop/Apps/SyncServerII/Private/ServerAppleSignInAccount/token.json"))
 
     func testClientSecretGenerationWorks() {
-        guard let appleSignInCreds = AppleSignInCreds(configuration: config) else {
+        guard let appleSignInCreds = AppleSignInCreds(configuration: config, delegate: nil) else {
             XCTFail()
             return
         }
@@ -67,7 +67,7 @@ class AccountAuthenticationTests_AppleSignIn: XCTestCase {
 
     // This has to be tested by hand-- since the authorization codes expire in 5 minutes and can only be used once. Before running this test, populate a auth code into the apple1 account first-- this can be generated from the iOS app.
     func testGenerateRefreshToken() {
-        guard let appleSignInCreds = AppleSignInCreds(configuration: config) else {
+        guard let appleSignInCreds = AppleSignInCreds(configuration: config, delegate: nil) else {
             XCTFail()
             return
         }
@@ -95,7 +95,7 @@ class AccountAuthenticationTests_AppleSignIn: XCTestCase {
 
     // This also has to be tested by hand-- since a refresh token can only be used at most every 24 hours
     func testValidateRefreshToken() {
-        guard let appleSignInCreds = AppleSignInCreds(configuration: config) else {
+        guard let appleSignInCreds = AppleSignInCreds(configuration: config, delegate: nil) else {
             XCTFail()
             return
         }
@@ -126,7 +126,7 @@ class AccountAuthenticationTests_AppleSignIn: XCTestCase {
     
     // No dbCreds, serverAuthCode, lastRefreshTokenValidation, refreshToken
     func testNeedToGenerateTokensNoGeneration() {
-        guard let appleSignInCreds = AppleSignInCreds(configuration: config) else {
+        guard let appleSignInCreds = AppleSignInCreds(configuration: config, delegate: nil) else {
             XCTFail()
             return
         }

@@ -150,8 +150,8 @@
         "repositoryURL": "https://github.com/SyncServerII/ServerAccount.git",
         "state": {
           "branch": null,
-          "revision": "c700d965204a296c295b2844638033261dcf8bb0",
-          "version": "0.0.3"
+          "revision": "1ed96a787e0c323e74f50d757838189fef34f4ae",
+          "version": "0.0.4"
         }
       },
       {
