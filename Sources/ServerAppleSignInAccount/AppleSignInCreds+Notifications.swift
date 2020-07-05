@@ -6,6 +6,7 @@
 //
 
 // For Apple's "server-to-server notifications"
+// Just a stub so far. Apple hasn't published specs on this yet for Apple Sign In.
 
 import Foundation
 import ServerAccount
