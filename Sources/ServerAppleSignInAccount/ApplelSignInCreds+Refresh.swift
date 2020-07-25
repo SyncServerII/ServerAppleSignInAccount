@@ -30,7 +30,7 @@ extension AppleSignInCreds {
     
     // https://developer.apple.com/documentation/signinwithapplerestapi/generate_and_validate_tokens
     
-    /// This can only be called once for a serverAuthCode.
+    /// This can only be called once for a specific serverAuthCode.
     func generateRefreshToken(serverAuthCode: String, completion: @escaping (Swift.Error?) -> ()) {
         // https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
         // For application/x-www-form-urlencoded, the body of the HTTP message sent to the server is essentially one giant query string -- name/value pairs are separated by the ampersand (&), and names are separated from values by the equals symbol (=). An example of this would be:
