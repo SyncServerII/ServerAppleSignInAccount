@@ -14,7 +14,7 @@ import LoggerAPI
 import Credentials
 import ServerAccount
 
-public struct AppleSignInConfiguration: Codable {
+public struct AppleSignInConfiguration: Decodable {
     // From creating a Service Id for your app.
     public let redirectURI: String
     
