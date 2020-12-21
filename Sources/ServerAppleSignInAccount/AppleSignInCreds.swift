@@ -14,24 +14,36 @@ import LoggerAPI
 import Credentials
 import ServerAccount
 
-public protocol AppleSignInConfiguration {
+public struct AppleSignInConfiguration: Codable {
     // From creating a Service Id for your app.
-    var redirectURI: String {get}
+    public let redirectURI: String
     
     // The reverse DNS style app identifier for your iOS app.
-    var clientId: String {get}
+    public let clientId: String
     
     // MARK: For generating the client secret; See notes in AppleSignInCreds+ClientSecret.swift
     
-    var keyId: String {get}
+    public let keyId: String
     
-    var teamId: String {get}
+    public let teamId: String
     
     // Once generated from the Apple developer's website, the key is converted
     // to a single line for the JSON using:
     //      awk 'NF {sub(/\r/, ""); printf "%s\\\\n",$0;}' *.p8
     // Script from https://docs.vmware.com/en/Unified-Access-Gateway/3.0/com.vmware.access-point-30-deploy-config.doc/GUID-870AF51F-AB37-4D6C-B9F5-4BFEB18F11E9.html
-    var privateKey: String {get}
+    public let privateKey: String
+    
+    public init(redirectURI: String, clientId: String, keyId: String, teamId: String, privateKey: String) {
+        self.redirectURI = redirectURI
+        self.clientId = clientId
+        self.keyId = keyId
+        self.teamId = teamId
+        self.privateKey = privateKey
+    }
+}
+
+public protocol AppleSignInConfigurable {
+    var appleSignIn: AppleSignInConfiguration? {get}
 }
 
 // For general strategy used with Apple Sign In-- see
@@ -92,13 +104,14 @@ public class AppleSignInCreds: AccountAPICall, Account {
     let config: AppleSignInConfiguration
     
     required public init?(configuration: Any? = nil, delegate: AccountDelegate?) {
-        guard let config = configuration as? AppleSignInConfiguration else {
+        guard let config = configuration as? AppleSignInConfigurable,
+            let appleSignIn = config.appleSignIn else {
             return nil
         }
         
         self.delegate = delegate
         
-        self.config = config
+        self.config = appleSignIn
         super.init()
         baseURL = "appleid.apple.com"
     }

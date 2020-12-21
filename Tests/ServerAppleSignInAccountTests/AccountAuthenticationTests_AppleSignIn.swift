@@ -20,17 +20,8 @@ import HeliumLogger
 @testable import ServerAppleSignInAccount
 import ServerAccount
 
-struct ServerAppleSignInJSON: Decodable, AppleSignInConfiguration {
-    var redirectURI: String
-    
-    var clientId: String
-    
-    var keyId: String
-    
-    var teamId: String
-    
-    var privateKey: String
-    
+struct ServerAppleSignInJSON: Decodable, AppleSignInConfigurable {
+    let appleSignIn: AppleSignInConfiguration?
     let authorizationCode: String?
     let refreshToken: String?
     
@@ -65,7 +56,7 @@ class AccountAuthenticationTests_AppleSignIn: XCTestCase {
         }
     }
 
-    // This has to be tested by hand-- since the authorization codes expire in 5 minutes and can only be used once. Before running this test, populate a auth code into the apple1 account first-- this can be generated from the iOS app.
+    // This has to be tested by hand-- since the authorization codes expire in 5 minutes and can only be used once. Before running this test, populate an auth code into the apple1 account first-- this can be generated from the iOS app.
     func testGenerateRefreshToken() {
         guard let appleSignInCreds = AppleSignInCreds(configuration: config, delegate: nil) else {
             XCTFail()
