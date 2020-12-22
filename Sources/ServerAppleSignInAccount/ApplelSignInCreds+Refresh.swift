@@ -31,6 +31,7 @@ extension AppleSignInCreds {
     // https://developer.apple.com/documentation/signinwithapplerestapi/generate_and_validate_tokens
     
     /// This can only be called once for a specific serverAuthCode.
+    /// On success, provides initial value for lastRefreshTokenValidation. This consititutes a "validation" of the refresh token because when initially received from Apple, the refresh token must be valid.
     func generateRefreshToken(serverAuthCode: String, completion: @escaping (Swift.Error?) -> ()) {
         // https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
         // For application/x-www-form-urlencoded, the body of the HTTP message sent to the server is essentially one giant query string -- name/value pairs are separated by the ampersand (&), and names are separated from values by the equals symbol (=). An example of this would be:
@@ -106,7 +107,7 @@ extension AppleSignInCreds {
                 return
             }
             
-            guard apiResult != nil else {
+            guard let apiResult = apiResult else {
                 completion(GenerateTokensError.nilAPIResult)
                 return
             }
@@ -128,7 +129,8 @@ extension AppleSignInCreds {
             
             self.accessToken = tokenResult.id_token
             self.refreshToken = tokenResult.refresh_token
-
+            self.lastRefreshTokenValidation = Date()
+            
             Log.debug("Obtained tokens: idToken: \(String(describing: self.accessToken))\n refreshToken: \(String(describing: self.refreshToken))")
             
             guard let delegate = self.delegate else {
