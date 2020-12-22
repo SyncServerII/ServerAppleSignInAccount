@@ -149,6 +149,7 @@ public class AppleSignInCreds: AccountAPICall, Account {
             else {
                 // We don't have an existing server auth code; assume this means this is a new user.
                 generateTokens = .generateRefreshToken(serverAuthCode: requestServerAuthCode)
+                Log.info("generateTokens: \(String(describing: generateTokens))")
                 return true
             }
         }
@@ -170,9 +171,11 @@ public class AppleSignInCreds: AccountAPICall, Account {
         if let lastValidationInfo = lastValidation,
             GenerateTokens.needToValidateRefreshToken(lastRefreshTokenValidation: lastValidationInfo.refreshDate) {
             generateTokens = .validateRefreshToken(refreshToken: lastValidationInfo.refreshToken)
+            Log.info("generateTokens: \(String(describing: generateTokens))")
             return true
         }
         
+        Log.info("noGeneration: lastValidation: \(String(describing: lastValidation))")
         generateTokens = .noGeneration
         return false
     }
@@ -190,12 +193,14 @@ public class AppleSignInCreds: AccountAPICall, Account {
             completion(nil)
             
         case .generateRefreshToken(serverAuthCode: let serverAuthCode):
+            Log.info("generateTokens: generateRefreshToken")
             generateRefreshToken(serverAuthCode: serverAuthCode) { [weak self] error in
                 self?.generateTokens = nil
                 completion(error)
             }
             
         case .validateRefreshToken(refreshToken: let refreshToken):
+            Log.info("generateTokens: validateRefreshToken")
             validateRefreshToken(refreshToken: refreshToken) { [weak self] error in
                 self?.generateTokens = nil
                 completion(error)
