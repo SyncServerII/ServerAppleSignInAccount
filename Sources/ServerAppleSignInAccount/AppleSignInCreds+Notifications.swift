@@ -12,7 +12,10 @@ import Foundation
 import ServerAccount
 import ServerShared
 
-public struct NotificationRequest: RequestMessage {
+public struct NotificationRequest: RequestMessage, NeedingRequestBodyData {
+    public var data:Data!
+    public var sizeOfDataInBytes:Int!
+    
     public init() {}
     
     public func valid() -> Bool {
