@@ -109,6 +109,7 @@ public class AppleSignInCreds: AccountAPICall, Account {
     }
     
     /* An account can be created only if the expiry date in the token has not yet expired. This relies on a minimim of clock skew between the originating server that generated the token expiry date and the server running this library.
+        NOTE: This may be unneeded and too strong a condition (and may introduce flakiness because of the clock skew issue). When adding a user, this server relies on needToGenerateTokens/generateTokens. If that process fails, the user won't be created. That process seems at least as strong a check as the expiry date check because the token generation makes a REST call to Apple's servers.
     */
     public func canCreateAccount(with userProfile: UserProfile) -> Bool {
         guard let expiryDate = userProfile.extendedProperties[CredentialsAppleSignIn.appleSignInTokenExpiryKey] as? Date else {
