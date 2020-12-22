@@ -16,12 +16,12 @@ public struct NotificationRequest: RequestMessage {
     public init() {}
     
     public func valid() -> Bool {
-        false
+        true
     }
     
     public static func decode(_ dictionary: [String : Any]) throws -> RequestMessage {
         // Just a stub.
-        throw AppleSignInCreds.AppleSignInCredsError.couldNotSignJWT
+        return NotificationRequest()
     }
 }
 
