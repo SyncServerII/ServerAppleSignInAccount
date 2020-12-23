@@ -5,7 +5,7 @@ import ServerShared
 import HeliumLogger
 import LoggerAPI
 
-public struct NotificationRequest: RequestMessage, NeedingRequestBodyData {
+public class NotificationRequest: RequestMessage, NeedingRequestBodyData {
     public var data:Data!
     public var sizeOfDataInBytes:Int!
     
