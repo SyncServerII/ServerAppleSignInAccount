@@ -21,6 +21,7 @@ public class AppleServerServerNotification: ControllerProtocol {
         return true
     }
     
+    // TODO: So far the update isn't doing anything. Seems like what we'll need to do here is to disable or remove Apple Sign In accounts where the server to server notification tells us that the account is no longer valid.
     public func update(request: NotificationRequest) {
         request.processData()
     }
