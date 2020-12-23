@@ -35,7 +35,7 @@ public class AppleServerServerNotification: ControllerProtocol {
         let payload: String // JWT
     }
 
-    public func getEventFromJWT(request: NotificationRequest, clientId: String, completion: @escaping (Swift.Result<AppleSignInClaims, Swift.Error>)->()) throws {
+    public func getEventFromJWT(request: NotificationRequest, clientId: String, completion: @escaping (Swift.Result<AppleSignInClaims, Swift.Error>)->()) {
         guard let data = request.data else {
             let message = "Could not get data from NotificationRequest"
             Log.error(message)
