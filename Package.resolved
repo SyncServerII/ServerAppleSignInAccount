@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "AppleJWTDecoder",
+        "repositoryURL": "https://github.com/SyncServerII/AppleJWTDecoder.git",
+        "state": {
+          "branch": null,
+          "revision": "862f4c6991433eadaf787ce539b97531c686c1a3",
+          "version": "0.0.3"
+        }
+      },
+      {
         "package": "Cryptor",
         "repositoryURL": "https://github.com/Kitura/BlueCryptor.git",
         "state": {
@@ -29,15 +38,6 @@
         }
       },
       {
-        "package": "Signals",
-        "repositoryURL": "https://github.com/Kitura/BlueSignals.git",
-        "state": {
-          "branch": null,
-          "revision": "1f6c49e186c8a4eeef87ba14f2f97b8646559d13",
-          "version": "1.0.200"
-        }
-      },
-      {
         "package": "Socket",
         "repositoryURL": "https://github.com/Kitura/BlueSocket.git",
         "state": {
@@ -59,9 +59,9 @@
         "package": "CredentialsAppleSignIn",
         "repositoryURL": "https://github.com/crspybits/CredentialsAppleSignIn.git",
         "state": {
-          "branch": "master",
-          "revision": "4d817d63fc6c1b8e6faea7f902e46dbcba125475",
-          "version": null
+          "branch": null,
+          "revision": "613567ee6aed3ba8cde647ce2363aa87ef620df5",
+          "version": "0.0.2"
         }
       },
       {
@@ -71,6 +71,15 @@
           "branch": null,
           "revision": "55fd2f0b70793017acee853c53cfcf8da0bd8d8d",
           "version": "1.9.200"
+        }
+      },
+      {
+        "package": "Kitura",
+        "repositoryURL": "https://github.com/IBM-Swift/Kitura.git",
+        "state": {
+          "branch": null,
+          "revision": "daf6479097469a0c1fe64755db6e23f788a3ec29",
+          "version": "2.9.200"
         }
       },
       {
