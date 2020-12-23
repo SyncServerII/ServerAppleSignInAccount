@@ -12,22 +12,6 @@ import Foundation
 import ServerAccount
 import ServerShared
 
-public struct NotificationRequest: RequestMessage, NeedingRequestBodyData {
-    public var data:Data!
-    public var sizeOfDataInBytes:Int!
-    
-    public init() {}
-    
-    public func valid() -> Bool {
-        true
-    }
-    
-    public static func decode(_ dictionary: [String : Any]) throws -> RequestMessage {
-        // Just a stub.
-        return NotificationRequest()
-    }
-}
-
 public class AppleServerServerNotification: ControllerProtocol {
     public static let endpoint = ServerEndpoint("AppleServerServerNotification", method: .post, requestMessageType: NotificationRequest.self, authenticationLevel: .none)
     
@@ -37,6 +21,7 @@ public class AppleServerServerNotification: ControllerProtocol {
         return true
     }
     
-    public func update() {
+    public func update(request: NotificationRequest) {
+        request.processData()
     }
 }
