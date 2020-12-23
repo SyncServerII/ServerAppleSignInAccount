@@ -14,39 +14,36 @@ import AppleJWTDecoder
 import HeliumLogger
 import LoggerAPI
 
-public class AppleServerServerNotification: ControllerProtocol {
-    enum AppleServerServerNotificationError: Swift.Error {
+extension NotificationRequest {
+    enum NotificationRequestError: Swift.Error {
         case failureResult(FailureResult)
-        case couldNotVerifyToken(ApplePublicKey<AppleSignInClaims>.TokenVerificationResult)
+        case couldNotVerifyToken(
+            ApplePublicKey<AppleSignInClaims>.TokenVerificationResult)
         case generic(String)
     }
     
+    // Empahasis: This endpoint is unauthenticated. i.e., no oauth token comes in the headers.
     public static let endpoint = ServerEndpoint("AppleServerServerNotification", method: .post, requestMessageType: NotificationRequest.self, authenticationLevel: .none)
-    
-    public init() {}
-    
-    public static func setup() -> Bool {
-        return true
-    }
 
     // Expect the body data of the REST server-to-server notification request from Apple, as a String, to be JSON:
-    //  {"payload" : "-- SNIP -- JWT"}
+    //      {"payload" : "-- SNIP -- JWT"}
+    // I determined this experimentally.
     struct ApplePayload: Decodable {
         let payload: String // JWT
     }
 
-    public func getEventFromJWT(request: NotificationRequest, clientId: String, completion: @escaping (Swift.Result<AppleSignInClaims, Swift.Error>)->()) {
-        guard let data = request.data else {
+    public func getEventFromJWT(clientId: String, completion: @escaping (Swift.Result<AppleSignInClaims, Swift.Error>)->()) {
+        guard let data = data else {
             let message = "Could not get data from NotificationRequest"
             Log.error(message)
-            completion(.failure(AppleServerServerNotificationError.generic(message)))
+            completion(.failure(NotificationRequestError.generic(message)))
             return
         }
         
         guard let jwt = try? JSONDecoder().decode(ApplePayload.self, from: data) else {
             let message = "Could not get ApplePayload from NotificationRequest data"
             Log.error(message)
-            completion(.failure(AppleServerServerNotificationError.generic(message)))
+            completion(.failure(NotificationRequestError.generic(message)))
             return
         }
 
@@ -59,7 +56,7 @@ public class AppleServerServerNotification: ControllerProtocol {
                 applePublicKey = key
                 
             case .failure(let failure):
-                completion(.failure(AppleServerServerNotificationError.failureResult(failure)))
+                completion(.failure(NotificationRequestError.failureResult(failure)))
                 return
             }
             
@@ -69,7 +66,7 @@ public class AppleServerServerNotification: ControllerProtocol {
                 Log.info("claims: \(claims)")
                 completion(.success(claims))
             default:
-                completion(.failure(AppleServerServerNotificationError.couldNotVerifyToken(verifyResult)))
+                completion(.failure(NotificationRequestError.couldNotVerifyToken(verifyResult)))
             }
         }
     }
