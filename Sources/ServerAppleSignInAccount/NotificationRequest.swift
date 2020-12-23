@@ -9,7 +9,7 @@ public class NotificationRequest: RequestMessage, NeedingRequestBodyData {
     public var data:Data!
     public var sizeOfDataInBytes:Int!
     
-    public init() {}
+    required public init() {}
     
     public func valid() -> Bool {
         true
