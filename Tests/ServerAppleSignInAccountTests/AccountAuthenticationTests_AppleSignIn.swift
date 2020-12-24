@@ -85,6 +85,9 @@ class AccountAuthenticationTests_AppleSignIn: XCTestCase {
     }
 
     // This also has to be tested by hand-- since a refresh token can only be used at most every 24 hours
+    // In my initial tests, I'm getting the following back when I attempt to do it with account where the user has revoked their credentials:
+    // apiResult: Optional(ServerAccount.APICallResult.dictionary(["error": invalid_grant]))
+    // See also https://stackoverflow.com/questions/65432826/what-is-a-definitive-bad-user-response-from-server-side-validation-of-a-refres
     func testValidateRefreshToken() {
         guard let appleSignInCreds = AppleSignInCreds(configuration: config, delegate: nil) else {
             XCTFail()

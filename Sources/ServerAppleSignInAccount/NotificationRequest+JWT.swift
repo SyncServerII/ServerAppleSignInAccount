@@ -46,8 +46,6 @@ extension NotificationRequest {
             completion(.failure(NotificationRequestError.generic(message)))
             return
         }
-
-        Log.info("payload JWT: \(jwt.payload)")
         
         ApplePublicKey.httpFetch { (result: Swift.Result<ApplePublicKey<AppleSignInClaims>, FailureResult>) in
             let applePublicKey:ApplePublicKey<AppleSignInClaims>
@@ -63,7 +61,6 @@ extension NotificationRequest {
             let verifyResult = applePublicKey.verifyToken(jwt.payload, clientId: clientId)
             switch verifyResult {
             case .success(let claims):
-                Log.info("claims: \(claims)")
                 completion(.success(claims))
             default:
                 completion(.failure(NotificationRequestError.couldNotVerifyToken(verifyResult)))

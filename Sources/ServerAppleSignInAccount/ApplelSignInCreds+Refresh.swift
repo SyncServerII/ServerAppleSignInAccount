@@ -97,6 +97,7 @@ extension AppleSignInCreds {
         let additionalHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
 
         apiCall(method: "POST", path: "/auth/token", additionalHeaders:additionalHeaders, body: .string(bodyParameters), expectedSuccessBody: .data) {[weak self] apiResult, statusCode, responseHeaders in
+            print("apiResult: \(String(describing: apiResult))")
             guard let self = self else {
                 completion(GenerateTokensError.couldNotGetSelf)
                 return
@@ -150,6 +151,8 @@ extension AppleSignInCreds {
     
     /// Validate the given refresh token. This does *not* generate a new id token-- the API returns an updated *access token*, which Apple doesn't define a use for (and we don't save).
     /// On success, updates the lastRefreshTokenValidation.
+    /// On an authoritative failure to validate the refresh token, what error is returned?
+    /// See also https://stackoverflow.com/questions/65432826/what-is-a-definitive-bad-user-response-from-server-side-validation-of-a-refres
     func validateRefreshToken(refreshToken: String, completion: @escaping (Swift.Error?) -> ()) {
         self.refreshToken = refreshToken
         
@@ -171,6 +174,7 @@ extension AppleSignInCreds {
         let additionalHeaders = ["Content-Type": "application/x-www-form-urlencoded"]
 
         apiCall(method: "POST", path: "/auth/token", additionalHeaders:additionalHeaders, body: .string(bodyParameters), expectedSuccessBody: .data) {[weak self] apiResult, statusCode, responseHeaders in
+            print("apiResult: \(String(describing: apiResult))")
             guard let self = self else {
                 completion(GenerateTokensError.couldNotGetSelf)
                 return
