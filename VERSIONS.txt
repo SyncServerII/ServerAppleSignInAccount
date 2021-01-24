@@ -1,5 +1,8 @@
 ServerAppleSignInAccount
-    
+
+Version 0.0.2 (1/23/21)
+	Fix package manifest issue.
+	
 Version 0.0.1 (1/23/21)
     Starting beta testing
 

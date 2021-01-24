@@ -13,7 +13,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/SyncServerII/ServerAccount.git", from: "0.0.1"),
-        .package(url: "https://github.com/SyncServerII/ServerShared.git", .branch("master")),
+        .package(url: "https://github.com/SyncServerII/ServerShared.git", from: "0.0.4"),
         .package(name: "SwiftJWT", url: "https://github.com/IBM-Swift/Swift-JWT.git", from: "3.6.1"),
         .package(url: "https://github.com/crspybits/CredentialsAppleSignIn.git", from: "0.0.1"),
         .package(url: "https://github.com/SyncServerII/AppleJWTDecoder.git", from: "0.0.1"),
